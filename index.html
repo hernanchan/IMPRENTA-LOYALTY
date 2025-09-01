@@ -296,4 +296,407 @@
         }
 
         .loading {
-            text-align:
+            text-align: center;
+            padding: 20px;
+            color: #666;
+        }
+
+        .error {
+            background: #f8d7da;
+            border: 1px solid #f5c6cb;
+            color: #721c24;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+
+        .config-section {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 30px;
+        }
+
+        .step-number {
+            background: #4CAF50;
+            color: white;
+            border-radius: 50%;
+            width: 30px;
+            height: 30px;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: bold;
+            margin-right: 10px;
+        }
+
+        @media (max-width: 768px) {
+            .tabs {
+                flex-direction: column;
+            }
+            
+            .tab {
+                flex: none;
+                padding: 15px;
+                font-size: 1rem;
+            }
+            
+            .services-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖨️ PrintLoyalty</h1>
+            <p>Sistema de Fidelización con Google Sheets</p>
+        </div>
+        
+        <div id="configBanner" class="config-banner">
+            ⚠️ Configura tu Google Sheet para comenzar - Ve a la pestaña "Configuración"
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('config')">⚙️ Configuración</button>
+            <button class="tab" onclick="showTab('consulta')">👤 Consultar Cliente</button>
+            <button class="tab" onclick="showTab('registrar')">📝 Registrar Venta</button>
+            <button class="tab" onclick="showTab('recompensas')">🎁 Recompensas</button>
+            <button class="tab" onclick="showTab('admin')">📊 Admin</button>
+        </div>
+        
+        <!-- TAB: Configuración -->
+        <div id="config" class="tab-content active">
+            <div class="config-section">
+                <h2>🔧 Configurar Google Sheets</h2>
+                <p style="margin-bottom: 30px; font-size: 1.1rem; color: #666;">Conecta tu Google Sheet para que el sistema funcione correctamente:</p>
+                
+                <div style="margin-bottom: 30px;">
+                    <div class="step-number">1</div>
+                    <h3 style="display: inline-block; margin-bottom: 15px;">ID de tu Google Sheet</h3>
+                    <p style="margin-bottom: 15px; color: #666;">Pega aquí el ID de tu Google Sheet (la parte entre /d/ y /edit en la URL):</p>
+                    <input type="text" id="sheetId" class="search-box" placeholder="Ejemplo: 1ABC123DEF456GHI789JKL..." style="font-family: monospace;">
+                    <small style="color: #888;">💡 El ID es una cadena larga de letras y números</small>
+                </div>
+                
+                <div style="margin-bottom: 30px;">
+                    <button class="btn" onclick="saveConfig()">💾 Guardar Configuración</button>
+                    <button class="btn btn-secondary" onclick="testConnection()">🔍 Probar Conexión</button>
+                </div>
+                
+                <div id="configStatus" style="margin-top: 20px;"></div>
+            </div>
+            
+            <div class="config-section">
+                <div class="step-number">2</div>
+                <h3 style="display: inline-block; margin-bottom: 15px;">Configurar las Hojas</h3>
+                <p style="margin-bottom: 15px;">Asegúrate de tener estas hojas con estos nombres exactos:</p>
+                
+                <div style="background: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h4>📊 Hoja "Clientes"</h4>
+                    <p style="margin: 10px 0;">En la fila 1, agrega estas columnas:</p>
+                    <code style="background: #f1f1f1; padding: 5px; display: block; margin: 10px 0;">ID | Nombre | Teléfono | Email | Puntos | Total_Gastado | Compras</code>
+                </div>
+                
+                <div style="background: white; padding: 20px; border-radius: 10px; margin: 15px 0;">
+                    <h4>📋 Hoja "Historial"</h4>
+                    <p style="margin: 10px 0;">En la fila 1, agrega estas columnas:</p>
+                    <code style="background: #f1f1f1; padding: 5px; display: block; margin: 10px 0;">Cliente_ID | Fecha | Servicio | Monto | Puntos | Tipo</code>
+                </div>
+            </div>
+            
+            <div class="config-section">
+                <div class="step-number">3</div>
+                <h3 style="display: inline-block; margin-bottom: 15px;">Instrucciones Paso a Paso</h3>
+                <ol style="padding-left: 30px; line-height: 2;">
+                    <li>Ve a <a href="https://sheets.google.com" target="_blank" style="color: #4CAF50;">sheets.google.com</a></li>
+                    <li>Crea una nueva hoja llamada <strong>"Sistema Fidelización - Imprenta"</strong></li>
+                    <li>Renombra la primera hoja a <strong>"Clientes"</strong></li>
+                    <li>En la fila 1 de "Clientes", agrega: <code>ID | Nombre | Teléfono | Email | Puntos | Total_Gastado | Compras</code></li>
+                    <li>Crea una segunda hoja llamada <strong>"Historial"</strong></li>
+                    <li>En la fila 1 de "Historial", agrega: <code>Cliente_ID | Fecha | Servicio | Monto | Puntos | Tipo</code></li>
+                    <li>Haz clic en <strong>"Compartir"</strong> → <strong>"Cualquier persona con el enlace"</strong> → <strong>"Editor"</strong></li>
+                    <li>Copia el ID del sheet (entre /d/ y /edit en la URL) y pégalo arriba ⬆️</li>
+                </ol>
+            </div>
+        </div>
+        
+        <!-- TAB: Consultar Cliente -->
+        <div id="consulta" class="tab-content">
+            <div class="client-search">
+                <h2>🔍 Buscar Cliente</h2>
+                <input type="text" id="searchClient" class="search-box" placeholder="Ingresa teléfono, nombre o email del cliente">
+                <button class="btn" onclick="searchClient()" id="searchBtn">Buscar Cliente</button>
+                <button class="btn btn-secondary" onclick="addNewClient()">+ Agregar Nuevo</button>
+            </div>
+            
+            <div id="searchLoading" class="loading" style="display:none;">
+                🔄 Buscando cliente...
+            </div>
+            
+            <div id="clientResult" style="display:none;">
+                <div class="points-card">
+                    <h3>Cliente: <span id="clientName"></span></h3>
+                    <div class="points-display" id="clientPoints">0</div>
+                    <p>Puntos Acumulados</p>
+                    <p>Próxima recompensa en: <span id="nextReward"></span> puntos</p>
+                </div>
+                
+                <div class="client-info">
+                    <p><strong>Teléfono:</strong> <span id="clientPhone"></span></p>
+                    <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+                    <p><strong>Total gastado:</strong> $<span id="clientTotal"></span></p>
+                    <p><strong>Compras realizadas:</strong> <span id="clientPurchases"></span></p>
+                </div>
+                
+                <h3>📋 Historial de Compras</h3>
+                <div style="overflow-x: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Fecha</th>
+                                <th>Servicio</th>
+                                <th>Monto</th>
+                                <th>Puntos</th>
+                            </tr>
+                        </thead>
+                        <tbody id="clientHistory">
+                            <!-- Historial dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+        
+        <!-- TAB: Registrar Venta -->
+        <div id="registrar" class="tab-content">
+            <h2>💰 Registrar Nueva Venta</h2>
+            
+            <div class="client-search">
+                <input type="text" id="saleClientSearch" class="search-box" placeholder="Buscar cliente por teléfono o nombre">
+                <button class="btn" onclick="findClientForSale()">Buscar Cliente</button>
+            </div>
+            
+            <div id="saleClientInfo" style="display:none;" class="client-info">
+                <p><strong>Cliente:</strong> <span id="saleClientName"></span></p>
+                <p><strong>Puntos actuales:</strong> <span id="saleClientPoints"></span></p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-title">📄 Impresión B/N</div>
+                    <div class="service-points">1 punto cada $50 • Sin bonificación</div>
+                    <input type="number" class="price-input" id="bn-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('bn', document.getElementById('bn-price').value)">Calcular Puntos</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-title">🌈 Impresión Color</div>
+                    <div class="service-points">1 punto cada $50 • Sin bonificación</div>
+                    <input type="number" class="price-input" id="color-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('color', document.getElementById('color-price').value)">Calcular Puntos</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-title">📋 Con Anillado</div>
+                    <div class="service-points">1 punto cada $50 • Sin bonificación</div>
+                    <input type="number" class="price-input" id="anillado-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('anillado', document.getElementById('anillado-price').value)">Calcular Puntos</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-title">✨ Papel Especial</div>
+                    <div class="service-points">1 punto cada $50 • +25% si >$2000</div>
+                    <input type="number" class="price-input" id="especial-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('especial', document.getElementById('especial-price').value)">Calcular Puntos</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-title">🏭 Trabajo Offset</div>
+                    <div class="service-points">1 punto cada $50 • +50% puntos siempre</div>
+                    <input type="number" class="price-input" id="offset-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('offset', document.getElementById('offset-price').value)">Calcular Puntos</button>
+                </div>
+            </div>
+            
+            <div id="pointsCalculation" style="display:none;" class="points-calculation">
+                <h3>💎 Cálculo de Puntos</h3>
+                <p><strong>Servicio:</strong> <span id="calcService"></span></p>
+                <p><strong>Monto:</strong> $<span id="calcAmount"></span></p>
+                <p><strong>Puntos base:</strong> <span id="calcBase"></span></p>
+                <p><strong>Bonificación:</strong> <span id="calcBonus"></span></p>
+                <p><strong>Total puntos:</strong> <span id="calcTotal"></span> puntos</p>
+                <button class="btn" onclick="confirmSale()">✅ Confirmar Venta</button>
+                <button class="btn btn-secondary" onclick="cancelSale()">❌ Cancelar</button>
+            </div>
+        </div>
+        
+        <!-- TAB: Recompensas -->
+        <div id="recompensas" class="tab-content">
+            <h2>🎁 Catálogo de Recompensas</h2>
+            
+            <div class="rewards-grid">
+                <div class="reward-card">
+                    <div class="reward-points">200 pts</div>
+                    <h3>50 Copias B/N Gratis</h3>
+                    <p>Válido para impresiones simples en papel bond</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">400 pts</div>
+                    <h3>15% Descuento</h3>
+                    <p>En cualquier servicio de la imprenta</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">600 pts</div>
+                    <h3>Anillado Gratis</h3>
+                    <p>Con cualquier impresión mayor a 20 hojas</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">800 pts</div>
+                    <h3>100 Copias Color Gratis</h3>
+                    <p>Válido para impresiones en papel fotográfico</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">1000 pts</div>
+                    <h3>25% Descuento Premium</h3>
+                    <p>En trabajos de offset o gran volumen</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">1500 pts</div>
+                    <h3>Diseño Básico Gratis</h3>
+                    <p>Flyer, tarjeta personal o volante simple</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; text-align: center;">
+                <h3>🔄 Canjear Recompensa</h3>
+                <input type="text" class="search-box" placeholder="Teléfono del cliente" id="redeemClient" style="margin-bottom: 15px;">
+                <select class="search-box" id="redeemReward">
+                    <option value="">Seleccionar recompensa...</option>
+                    <option value="200">50 Copias B/N Gratis (200 pts)</option>
+                    <option value="400">15% Descuento (400 pts)</option>
+                    <option value="600">Anillado Gratis (600 pts)</option>
+                    <option value="800">100 Copias Color Gratis (800 pts)</option>
+                    <option value="1000">25% Descuento Premium (1000 pts)</option>
+                    <option value="1500">Diseño Básico Gratis (1500 pts)</option>
+                </select>
+                <button class="btn" onclick="redeemReward()">🎁 Canjear Recompensa</button>
+            </div>
+        </div>
+        
+        <!-- TAB: Admin -->
+        <div id="admin" class="tab-content">
+            <h2>📊 Panel de Administración</h2>
+            
+            <div id="adminLoading" class="loading">
+                🔄 Cargando estadísticas...
+            </div>
+            
+            <div id="adminContent" style="display:none;">
+                <div class="stats-grid">
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalClients">0</div>
+                        <div class="stat-label">Clientes Registrados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalSales">$0</div>
+                        <div class="stat-label">Ventas Totales</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="totalPoints">0</div>
+                        <div class="stat-label">Puntos Otorgados</div>
+                    </div>
+                    <div class="stat-card">
+                        <div class="stat-number" id="activeClients">0</div>
+                        <div class="stat-label">Clientes Activos</div>
+                    </div>
+                </div>
+                
+                <h3>👑 Top 10 Clientes VIP</h3>
+                <div style="overflow-x: auto;">
+                    <table class="history-table">
+                        <thead>
+                            <tr>
+                                <th>Cliente</th>
+                                <th>Puntos</th>
+                                <th>Total Gastado</th>
+                                <th>Compras</th>
+                            </tr>
+                        </thead>
+                        <tbody id="topClients">
+                            <!-- Top clientes dinámico -->
+                        </tbody>
+                    </table>
+                </div>
+                
+                <div style="margin-top: 30px;">
+                    <button class="btn" onclick="refreshData()">🔄 Actualizar Datos</button>
+                    <button class="btn btn-secondary" onclick="viewSheet()">📊 Ver Google Sheet</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Configuración Google Sheets
+        let SHEET_ID = '';
+        let CLIENTS_SHEET = 'Clientes';
+        let HISTORY_SHEET = 'Historial';
+        let isConfigured = false;
+        
+        // Cache local
+        let clientsCache = [];
+        let historyCache = [];
+        let currentSaleClient = null;
+        let pendingSale = null;
+        
+        // Inicialización
+        window.onload = function() {
+            loadConfig();
+            if (isConfigured) {
+                updateConfigBanner(true);
+                // No cambiar automáticamente de pestaña si ya está configurado
+            } else {
+                showTab('config');
+            }
+        };
+        
+        function loadConfig() {
+            const savedSheetId = localStorage.getItem('loyalty_sheet_id');
+            if (savedSheetId) {
+                SHEET_ID = savedSheetId;
+                document.getElementById('sheetId').value = savedSheetId;
+                isConfigured = true;
+                updateConfigBanner(true);
+            }
+        }
+        
+        function saveConfig() {
+            const sheetId = document.getElementById('sheetId').value.trim();
+            if (!sheetId) {
+                alert('Por favor ingresa el ID de tu Google Sheet');
+                return;
+            }
+            
+            SHEET_ID = sheetId;
+            localStorage.setItem('loyalty_sheet_id', sheetId);
+            isConfigured = true;
+            updateConfigBanner(true);
+            
+            document.getElementById('configStatus').innerHTML = '<div style="color: green; margin-top: 15px; padding: 15px; background: #d4edda; border-radius: 8px;">✅ Configuración guardada correctamente. Ahora prueba la conexión.</div>';
+        }
+        
+        function updateConfigBanner(connected) {
+            const banner = document.getElementById('configBanner');
+            if (connected) {
+                banner.innerHTML = '✅ Google Sheet configurado - Sistema listo para usar';
