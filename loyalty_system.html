@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>PrintLoyalty - Sistema de Fidelización</title>
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            min-height: 100vh;
+            padding: 20px;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+            background: white;
+            border-radius: 20px;
+            box-shadow: 0 20px 60px rgba(0,0,0,0.1);
+            overflow: hidden;
+        }
+        
+        .header {
+            background: linear-gradient(90deg, #4CAF50, #45a049);
+            color: white;
+            padding: 30px;
+            text-align: center;
+        }
+        
+        .header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 10px;
+        }
+        
+        .header p {
+            font-size: 1.1rem;
+            opacity: 0.9;
+        }
+        
+        .tabs {
+            display: flex;
+            background: #f8f9fa;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .tab {
+            flex: 1;
+            padding: 20px;
+            text-align: center;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1.1rem;
+            font-weight: 600;
+            color: #666;
+            transition: all 0.3s;
+        }
+        
+        .tab.active {
+            background: white;
+            color: #4CAF50;
+            border-bottom: 3px solid #4CAF50;
+        }
+        
+        .tab:hover {
+            background: #e9ecef;
+        }
+        
+        .tab-content {
+            display: none;
+            padding: 30px;
+        }
+        
+        .tab-content.active {
+            display: block;
+        }
+        
+        .points-card {
+            background: linear-gradient(135deg, #667eea, #764ba2);
+            color: white;
+            padding: 30px;
+            border-radius: 15px;
+            margin-bottom: 30px;
+            text-align: center;
+        }
+        
+        .points-display {
+            font-size: 3rem;
+            font-weight: bold;
+            margin: 20px 0;
+        }
+        
+        .client-search {
+            margin-bottom: 30px;
+        }
+        
+        .search-box {
+            width: 100%;
+            padding: 15px;
+            border: 2px solid #dee2e6;
+            border-radius: 10px;
+            font-size: 1.1rem;
+            margin-bottom: 15px;
+        }
+        
+        .search-box:focus {
+            outline: none;
+            border-color: #4CAF50;
+        }
+        
+        .btn {
+            background: #4CAF50;
+            color: white;
+            border: none;
+            padding: 12px 24px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 1rem;
+            font-weight: 600;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .btn:hover {
+            background: #45a049;
+            transform: translateY(-2px);
+        }
+        
+        .btn-secondary {
+            background: #6c757d;
+        }
+        
+        .btn-secondary:hover {
+            background: #5a6268;
+        }
+        
+        .services-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 20px;
+            margin: 30px 0;
+        }
+        
+        .service-card {
+            border: 2px solid #dee2e6;
+            border-radius: 15px;
+            padding: 25px;
+            transition: all 0.3s;
+        }
+        
+        .service-card:hover {
+            border-color: #4CAF50;
+            transform: translateY(-5px);
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .service-title {
+            color: #4CAF50;
+            font-size: 1.3rem;
+            font-weight: bold;
+            margin-bottom: 10px;
+        }
+        
+        .service-points {
+            color: #666;
+            font-size: 0.9rem;
+            margin-bottom: 15px;
+        }
+        
+        .price-input {
+            width: 100%;
+            padding: 10px;
+            border: 1px solid #dee2e6;
+            border-radius: 5px;
+            margin-bottom: 15px;
+        }
+        
+        .rewards-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+        
+        .reward-card {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 25px;
+            text-align: center;
+            transition: all 0.3s;
+            border: 2px solid transparent;
+        }
+        
+        .reward-card:hover {
+            border-color: #4CAF50;
+            transform: scale(1.05);
+        }
+        
+        .reward-points {
+            background: #4CAF50;
+            color: white;
+            padding: 10px 20px;
+            border-radius: 25px;
+            font-weight: bold;
+            display: inline-block;
+            margin-bottom: 15px;
+        }
+        
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+        }
+        
+        .history-table th, .history-table td {
+            padding: 15px;
+            text-align: left;
+            border-bottom: 1px solid #dee2e6;
+        }
+        
+        .history-table th {
+            background: #f8f9fa;
+            font-weight: 600;
+            color: #333;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 20px;
+            margin-bottom: 30px;
+        }
+        
+        .stat-card {
+            background: linear-gradient(135deg, #4CAF50, #45a049);
+            color: white;
+            padding: 25px;
+            border-radius: 15px;
+            text-align: center;
+        }
+        
+        .stat-number {
+            font-size: 2.5rem;
+            font-weight: bold;
+            margin-bottom: 5px;
+        }
+        
+        .stat-label {
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+
+        .client-info {
+            background: #f8f9fa;
+            padding: 20px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+        }
+
+        .points-calculation {
+            background: #e8f5e8;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 10px 0;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <div class="header">
+            <h1>🖨️ PrintLoyalty</h1>
+            <p>Sistema de Fidelización para Imprenta Digital</p>
+        </div>
+        
+        <div class="tabs">
+            <button class="tab active" onclick="showTab('consulta')">👤 Consultar Cliente</button>
+            <button class="tab" onclick="showTab('registrar')">📝 Registrar Venta</button>
+            <button class="tab" onclick="showTab('recompensas')">🎁 Recompensas</button>
+            <button class="tab" onclick="showTab('admin')">📊 Admin</button>
+        </div>
+        
+        <!-- TAB: Consultar Cliente -->
+        <div id="consulta" class="tab-content active">
+            <div class="client-search">
+                <h2>🔍 Buscar Cliente</h2>
+                <input type="text" id="searchClient" class="search-box" placeholder="Ingresa teléfono, nombre o email del cliente">
+                <button class="btn" onclick="searchClient()">Buscar Cliente</button>
+                <button class="btn btn-secondary" onclick="addNewClient()">+ Agregar Nuevo</button>
+            </div>
+            
+            <div id="clientResult" style="display:none;">
+                <div class="points-card">
+                    <h3>Cliente: <span id="clientName"></span></h3>
+                    <div class="points-display" id="clientPoints">0</div>
+                    <p>Puntos Acumulados</p>
+                    <p>Próxima recompensa en: <span id="nextReward"></span> puntos</p>
+                </div>
+                
+                <div class="client-info">
+                    <p><strong>Teléfono:</strong> <span id="clientPhone"></span></p>
+                    <p><strong>Email:</strong> <span id="clientEmail"></span></p>
+                    <p><strong>Total gastado:</strong> $<span id="clientTotal"></span></p>
+                    <p><strong>Compras realizadas:</strong> <span id="clientPurchases"></span></p>
+                </div>
+                
+                <h3>📋 Historial de Compras</h3>
+                <table class="history-table">
+                    <thead>
+                        <tr>
+                            <th>Fecha</th>
+                            <th>Servicio</th>
+                            <th>Monto</th>
+                            <th>Puntos</th>
+                        </tr>
+                    </thead>
+                    <tbody id="clientHistory">
+                        <!-- Historial dinámico -->
+                    </tbody>
+                </table>
+            </div>
+        </div>
+        
+        <!-- TAB: Registrar Venta -->
+        <div id="registrar" class="tab-content">
+            <h2>💰 Registrar Nueva Venta</h2>
+            
+            <div class="client-search">
+                <input type="text" id="saleClientSearch" class="search-box" placeholder="Buscar cliente por teléfono o nombre">
+                <button class="btn" onclick="findClientForSale()">Buscar</button>
+            </div>
+            
+            <div id="saleClientInfo" style="display:none;" class="client-info">
+                <p><strong>Cliente:</strong> <span id="saleClientName"></span></p>
+                <p><strong>Puntos actuales:</strong> <span id="saleClientPoints"></span></p>
+            </div>
+            
+            <div class="services-grid">
+                <div class="service-card">
+                    <div class="service-title">📄 Impresión B/N</div>
+                    <div class="service-points">1 punto cada $50 • Sin bonificación</div>
+                    <input type="number" class="price-input" id="bn-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('bn', document.getElementById('bn-price').value)">Calcular Puntos</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-title">🌈 Impresión Color</div>
+                    <div class="service-points">1 punto cada $50 • Sin bonificación</div>
+                    <input type="number" class="price-input" id="color-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('color', document.getElementById('color-price').value)">Calcular Puntos</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-title">📋 Con Anillado</div>
+                    <div class="service-points">1 punto cada $50 • Sin bonificación</div>
+                    <input type="number" class="price-input" id="anillado-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('anillado', document.getElementById('anillado-price').value)">Calcular Puntos</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-title">✨ Papel Especial</div>
+                    <div class="service-points">1 punto cada $50 • +25% si >$2000</div>
+                    <input type="number" class="price-input" id="especial-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('especial', document.getElementById('especial-price').value)">Calcular Puntos</button>
+                </div>
+                
+                <div class="service-card">
+                    <div class="service-title">🏭 Trabajo Offset</div>
+                    <div class="service-points">1 punto cada $50 • +50% puntos siempre</div>
+                    <input type="number" class="price-input" id="offset-price" placeholder="Monto total ($)">
+                    <button class="btn" onclick="calculatePoints('offset', document.getElementById('offset-price').value)">Calcular Puntos</button>
+                </div>
+            </div>
+            
+            <div id="pointsCalculation" style="display:none;" class="points-calculation">
+                <h3>💎 Cálculo de Puntos</h3>
+                <p><strong>Servicio:</strong> <span id="calcService"></span></p>
+                <p><strong>Monto:</strong> $<span id="calcAmount"></span></p>
+                <p><strong>Puntos base:</strong> <span id="calcBase"></span></p>
+                <p><strong>Bonificación:</strong> <span id="calcBonus"></span></p>
+                <p><strong>Total puntos:</strong> <span id="calcTotal"></span> puntos</p>
+                <button class="btn" onclick="confirmSale()">✅ Confirmar Venta</button>
+                <button class="btn btn-secondary" onclick="cancelSale()">❌ Cancelar</button>
+            </div>
+        </div>
+        
+        <!-- TAB: Recompensas -->
+        <div id="recompensas" class="tab-content">
+            <h2>🎁 Catálogo de Recompensas</h2>
+            
+            <div class="rewards-grid">
+                <div class="reward-card">
+                    <div class="reward-points">200 pts</div>
+                    <h3>50 Copias B/N Gratis</h3>
+                    <p>Válido para impresiones simples en papel bond</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">400 pts</div>
+                    <h3>15% Descuento</h3>
+                    <p>En cualquier servicio de la imprenta</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">600 pts</div>
+                    <h3>Anillado Gratis</h3>
+                    <p>Con cualquier impresión mayor a 20 hojas</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">800 pts</div>
+                    <h3>100 Copias Color Gratis</h3>
+                    <p>Válido para impresiones en papel fotográfico</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">1000 pts</div>
+                    <h3>25% Descuento Premium</h3>
+                    <p>En trabajos de offset o gran volumen</p>
+                </div>
+                
+                <div class="reward-card">
+                    <div class="reward-points">1500 pts</div>
+                    <h3>Diseño Básico Gratis</h3>
+                    <p>Flyer, tarjeta personal o volante simple</p>
+                </div>
+            </div>
+            
+            <div style="margin-top: 40px; text-align: center;">
+                <h3>🔄 Canjear Recompensa</h3>
+                <input type="text" class="search-box" placeholder="Teléfono del cliente" id="redeemClient" style="margin-bottom: 15px;">
+                <select class="search-box" id="redeemReward">
+                    <option value="">Seleccionar recompensa...</option>
+                    <option value="200">50 Copias B/N Gratis (200 pts)</option>
+                    <option value="400">15% Descuento (400 pts)</option>
+                    <option value="600">Anillado Gratis (600 pts)</option>
+                    <option value="800">100 Copias Color Gratis (800 pts)</option>
+                    <option value="1000">25% Descuento Premium (1000 pts)</option>
+                    <option value="1500">Diseño Básico Gratis (1500 pts)</option>
+                </select>
+                <button class="btn" onclick="redeemReward()">🎁 Canjear Recompensa</button>
+            </div>
+        </div>
+        
+        <!-- TAB: Admin -->
+        <div id="admin" class="tab-content">
+            <h2>📊 Panel de Administración</h2>
+            
+            <div class="stats-grid">
+                <div class="stat-card">
+                    <div class="stat-number" id="totalClients">0</div>
+                    <div class="stat-label">Clientes Registrados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalSales">$0</div>
+                    <div class="stat-label">Ventas Totales</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalPoints">0</div>
+                    <div class="stat-label">Puntos Otorgados</div>
+                </div>
+                <div class="stat-card">
+                    <div class="stat-number" id="totalRedeemed">0</div>
+                    <div class="stat-label">Recompensas Canjeadas</div>
+                </div>
+            </div>
+            
+            <h3>👑 Top 10 Clientes VIP</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>Cliente</th>
+                        <th>Puntos</th>
+                        <th>Total Gastado</th>
+                        <th>Compras</th>
+                    </tr>
+                </thead>
+                <tbody id="topClients">
+                    <!-- Top clientes dinámico -->
+                </tbody>
+            </table>
+            
+            <div style="margin-top: 30px;">
+                <button class="btn" onclick="exportData()">📥 Exportar Datos</button>
+                <button class="btn btn-secondary" onclick="resetData()">🔄 Reiniciar Sistema</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        // Base de datos simulada en memoria
+        let clients = [
+            {
+                id: 1,
+                name: "María González",
+                phone: "+54911234567",
+                email: "maria@email.com",
+                points: 450,
+                totalSpent: 12500,
+                purchases: 8,
+                history: [
+                    {date: "2024-01-15", service: "Impresión B/N + Anillado", amount: 2500, points: 50},
+                    {date: "2024-01-20", service: "Trabajo Offset", amount: 8000, points: 240},
+                    {date: "2024-01-25", service: "Impresión Color", amount: 2000, points: 40}
+                ]
+            },
+            {
+                id: 2,
+                name: "Carlos Rodríguez",
+                phone: "+54911234568",
+                email: "carlos@email.com",
+                points: 320,
+                totalSpent: 8900,
+                purchases: 5,
+                history: [
+                    {date: "2024-01-10", service: "Papel Especial", amount: 3500, points: 87},
+                    {date: "2024-01-18", service: "Impresión B/N", amount: 1200, points: 24}
+                ]
+            }
+        ];
+        
+        let currentSaleClient = null;
+        let pendingSale = null;
+        
+        // Funciones de navegación
+        function showTab(tabName) {
+            document.querySelectorAll('.tab').forEach(tab => tab.classList.remove('active'));
+            document.querySelectorAll('.tab-content').forEach(content => content.style.display = 'none');
+            
+            document.querySelector(`[onclick="showTab('${tabName}')"]`).classList.add('active');
+            document.getElementById(tabName).style.display = 'block';
+            
+            if (tabName === 'admin') {
+                updateAdminStats();
+            }
+        }
+        
+        // Búsqueda de clientes
+        function searchClient() {
+            const searchTerm = document.getElementById('searchClient').value.toLowerCase();
+            const client = clients.find(c => 
+                c.name.toLowerCase().includes(searchTerm) || 
+                c.phone.includes(searchTerm) || 
+                c.email.toLowerCase().includes(searchTerm)
+            );
+            
+            if (client) {
+                displayClientInfo(client);
+            } else {
+                alert('Cliente no encontrado');
+            }
+        }
+        
+        function displayClientInfo(client) {
+            document.getElementById('clientResult').style.display = 'block';
+            document.getElementById('clientName').textContent = client.name;
+            document.getElementById('clientPoints').textContent = client.points;
+            document.getElementById('clientPhone').textContent = client.phone;
+            document.getElementById('clientEmail').textContent = client.email;
+            document.getElementById('clientTotal').textContent = client.totalSpent.toLocaleString();
+            document.getElementById('clientPurchases').textContent = client.purchases;
+            
+            // Calcular próxima recompensa
+            const rewards = [200, 400, 600, 800, 1000, 1500];
+            const nextReward = rewards.find(r => r > client.points) || rewards[rewards.length - 1];
+            document.getElementById('nextReward').textContent = nextReward - client.points;
+            
+            // Mostrar historial
+            const historyTable = document.getElementById('clientHistory');
+            historyTable.innerHTML = client.history.map(h => `
+                <tr>
+                    <td>${h.date}</td>
+                    <td>${h.service}</td>
+                    <td>$${h.amount.toLocaleString()}</td>
+                    <td>${h.points}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function addNewClient() {
+            const name = prompt('Nombre del cliente:');
+            const phone = prompt('Teléfono:');
+            const email = prompt('Email (opcional):') || '';
+            
+            if (name && phone) {
+                const newClient = {
+                    id: clients.length + 1,
+                    name,
+                    phone,
+                    email,
+                    points: 0,
+                    totalSpent: 0,
+                    purchases: 0,
+                    history: []
+                };
+                
+                clients.push(newClient);
+                displayClientInfo(newClient);
+                alert('Cliente agregado exitosamente');
+            }
+        }
+        
+        // Cálculo de puntos
+        function calculatePoints(service, amount) {
+            if (!amount || amount <= 0) {
+                alert('Ingresa un monto válido');
+                return;
+            }
+            
+            const basePoints = Math.floor(amount / 50); // 1 punto cada $50
+            let bonus = 0;
+            let bonusText = 'Sin bonificación';
+            
+            // Aplicar bonificaciones
+            if (service === 'offset') {
+                bonus = Math.floor(basePoints * 0.5); // +50%
+                bonusText = '+50% por trabajo offset';
+            } else if (service === 'especial' && amount > 2000) {
+                bonus = Math.floor(basePoints * 0.25); // +25%
+                bonusText = '+25% por pedido >$2000';
+            }
+            
+            const totalPoints = basePoints + bonus;
+            
+            // Mostrar cálculo
+            document.getElementById('pointsCalculation').style.display = 'block';
+            document.getElementById('calcService').textContent = getServiceName(service);
+            document.getElementById('calcAmount').textContent = parseFloat(amount).toLocaleString();
+            document.getElementById('calcBase').textContent = basePoints;
+            document.getElementById('calcBonus').textContent = bonusText + (bonus > 0 ? ` (+${bonus})` : '');
+            document.getElementById('calcTotal').textContent = totalPoints;
+            
+            // Guardar venta pendiente
+            pendingSale = {
+                service: getServiceName(service),
+                amount: parseFloat(amount),
+                points: totalPoints
+            };
+        }
+        
+        function getServiceName(service) {
+            const names = {
+                'bn': 'Impresión B/N',
+                'color': 'Impresión Color',
+                'anillado': 'Con Anillado',
+                'especial': 'Papel Especial',
+                'offset': 'Trabajo Offset'
+            };
+            return names[service] || service;
+        }
+        
+        function findClientForSale() {
+            const searchTerm = document.getElementById('saleClientSearch').value.toLowerCase();
+            const client = clients.find(c => 
+                c.name.toLowerCase().includes(searchTerm) || 
+                c.phone.includes(searchTerm)
+            );
+            
+            if (client) {
+                currentSaleClient = client;
+                document.getElementById('saleClientInfo').style.display = 'block';
+                document.getElementById('saleClientName').textContent = client.name;
+                document.getElementById('saleClientPoints').textContent = client.points;
+            } else {
+                alert('Cliente no encontrado. Usa la pestaña "Consultar Cliente" para agregarlo.');
+            }
+        }
+        
+        function confirmSale() {
+            if (!currentSaleClient || !pendingSale) {
+                alert('Selecciona un cliente y calcula los puntos primero');
+                return;
+            }
+            
+            // Actualizar cliente
+            currentSaleClient.points += pendingSale.points;
+            currentSaleClient.totalSpent += pendingSale.amount;
+            currentSaleClient.purchases += 1;
+            currentSaleClient.history.push({
+                date: new Date().toISOString().split('T')[0],
+                service: pendingSale.service,
+                amount: pendingSale.amount,
+                points: pendingSale.points
+            });
+            
+            // Limpiar formulario
+            document.getElementById('pointsCalculation').style.display = 'none';
+            document.getElementById('saleClientInfo').style.display = 'none';
+            document.getElementById('saleClientSearch').value = '';
+            document.querySelectorAll('.price-input').forEach(input => input.value = '');
+            
+            alert(`¡Venta registrada! ${currentSaleClient.name} ahora tiene ${currentSaleClient.points} puntos.`);
+            
+            currentSaleClient = null;
+            pendingSale = null;
+        }
+        
+        function cancelSale() {
+            document.getElementById('pointsCalculation').style.display = 'none';
+            pendingSale = null;
+        }
+        
+        // Canje de recompensas
+        function redeemReward() {
+            const clientPhone = document.getElementById('redeemClient').value;
+            const rewardPoints = parseInt(document.getElementById('redeemReward').value);
+            
+            if (!clientPhone || !rewardPoints) {
+                alert('Completa todos los campos');
+                return;
+            }
+            
+            const client = clients.find(c => c.phone.includes(clientPhone));
+            
+            if (!client) {
+                alert('Cliente no encontrado');
+                return;
+            }
+            
+            if (client.points < rewardPoints) {
+                alert(`El cliente solo tiene ${client.points} puntos, necesita ${rewardPoints}`);
+                return;
+            }
+            
+            // Procesar canje
+            client.points -= rewardPoints;
+            client.history.push({
+                date: new Date().toISOString().split('T')[0],
+                service: 'Canje de recompensa',
+                amount: 0,
+                points: -rewardPoints
+            });
+            
+            alert(`¡Recompensa canjeada! ${client.name} ahora tiene ${client.points} puntos.`);
+            
+            // Limpiar formulario
+            document.getElementById('redeemClient').value = '';
+            document.getElementById('redeemReward').value = '';
+        }
+        
+        // Panel de administración
+        function updateAdminStats() {
+            document.getElementById('totalClients').textContent = clients.length;
+            document.getElementById('totalSales').textContent = '$' + clients.reduce((sum, c) => sum + c.totalSpent, 0).toLocaleString();
+            document.getElementById('totalPoints').textContent = clients.reduce((sum, c) => sum + c.points, 0).toLocaleString();
+            
+            // Top clientes
+            const topClients = [...clients]
+                .sort((a, b) => b.points - a.points)
+                .slice(0, 10);
+            
+            document.getElementById('topClients').innerHTML = topClients.map(c => `
+                <tr>
+                    <td>${c.name}</td>
+                    <td>${c.points}</td>
+                    <td>${c.totalSpent.toLocaleString()}</td>
+                    <td>${c.purchases}</td>
+                </tr>
+            `).join('');
+        }
+        
+        function exportData() {
+            const data = {
+                clients: clients,
+                exportDate: new Date().toISOString()
+            };
+            
+            const dataStr = JSON.stringify(data, null, 2);
+            const dataBlob = new Blob([dataStr], {type: 'application/json'});
+            const url = URL.createObjectURL(dataBlob);
+            
+            const link = document.createElement('a');
+            link.href = url;
+            link.download = `loyalty_backup_${new Date().toISOString().split('T')[0]}.json`;
+            link.click();
+        }
+        
+        function resetData() {
+            if (confirm('¿Estás seguro de que quieres reiniciar todos los datos? Esta acción no se puede deshacer.')) {
+                clients.length = 0;
+                updateAdminStats();
+                alert('Sistema reiniciado');
+            }
+        }
+        
+        // Inicializar
+        window.onload = function() {
+            updateAdminStats();
+        };
+    </script>
+</body>
+</html>
