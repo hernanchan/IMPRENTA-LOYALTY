@@ -665,7 +665,6 @@
             loadConfig();
             if (isConfigured) {
                 updateConfigBanner(true);
-                // No cambiar automáticamente de pestaña si ya está configurado
             } else {
                 showTab('config');
             }
@@ -700,3 +699,19 @@
             const banner = document.getElementById('configBanner');
             if (connected) {
                 banner.innerHTML = '✅ Google Sheet configurado - Sistema listo para usar';
+                banner.className = 'config-banner connected';
+            } else {
+                banner.innerHTML = '⚠️ Configura tu Google Sheet para comenzar - Ve a la pestaña "Configuración"';
+                banner.className = 'config-banner';
+            }
+        }
+        
+        async function testConnection() {
+            if (!SHEET_ID) {
+                alert('Primero guarda la configuración');
+                return;
+            }
+            
+            const statusDiv = document.getElementById('configStatus');
+            statusDiv.innerHTML = '<div style="color: #856404; margin-top: 15px; padding: 15px; background: #fff3cd; border-radius: 8px;">🔄 Probando conexión...
+                Código completo con JavaScript
