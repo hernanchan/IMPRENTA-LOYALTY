@@ -333,7 +333,6 @@
             }
             
             try {
-                // Prueba simple con GET primero
                 const response = await fetch(API_URL);
                 if (response.ok) {
                     const data = await response.json();
@@ -355,7 +354,8 @@
             }
             
             try {
-                const response = await fetch(API_URL, {
+                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
+                const response = await fetch(proxyUrl + API_URL, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -538,12 +538,10 @@
                 return;
             }
             
-            // Actualizar cliente
             const newPoints = currentSaleClient.points + pendingSale.points;
             const newTotal = currentSaleClient.totalSpent + pendingSale.amount;
             const newPurchases = currentSaleClient.purchases + 1;
             
-            // Actualizar en Google Sheets
             const updateResult = await callApi('updateClient', {
                 id: currentSaleClient.id,
                 points: newPoints,
@@ -551,7 +549,6 @@
                 purchases: newPurchases
             });
             
-            // Agregar al historial
             const historyResult = await callApi('addHistory', {
                 clientId: currentSaleClient.id,
                 service: pendingSale.service,
@@ -563,7 +560,6 @@
             if (updateResult && updateResult.success && historyResult && historyResult.success) {
                 alert(`¡Venta registrada! ${currentSaleClient.name} ahora tiene ${newPoints} puntos.`);
                 
-                // Limpiar formulario
                 document.getElementById('pointsCalculation').style.display = 'none';
                 document.getElementById('saleClientInfo').style.display = 'none';
                 document.getElementById('saleClientSearch').value = '';
@@ -604,7 +600,6 @@
                 return;
             }
             
-            // Procesar canje
             const newPoints = client.points - rewardPoints;
             
             const updateResult = await callApi('updateClient', {
@@ -641,19 +636,16 @@
                 const clients = clientsResult.data;
                 clientsCache = clients;
                 
-                // Calcular estadísticas
                 const totalClients = clients.length;
                 const totalSales = clients.reduce((sum, c) => sum + c.totalSpent, 0);
                 const totalPoints = clients.reduce((sum, c) => sum + c.points, 0);
                 const activeClients = clients.filter(c => c.purchases > 0).length;
                 
-                // Actualizar UI - ERROR CORREGIDO AQUÍ
                 document.getElementById('totalClients').textContent = totalClients;
                 document.getElementById('totalSales').textContent = '$' + totalSales.toLocaleString();
                 document.getElementById('totalPoints').textContent = totalPoints.toLocaleString();
                 document.getElementById('activeClients').textContent = activeClients;
                 
-                // Top clientes
                 const topClients = [...clients]
                     .sort((a, b) => b.points - a.points)
                     .slice(0, 10);
