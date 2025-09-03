@@ -333,16 +333,18 @@
             }
             
             try {
+                // Prueba simple con GET primero
                 const response = await fetch(API_URL);
-                const data = await response.json();
-                
-                if (data.success) {
-                    document.getElementById('configStatus').innerHTML = '<div style="color:green;padding:15px;background:#d4edda;border-radius:8px;margin-top:15px;">✅ API funcionando correctamente</div>';
-                } else {
-                    throw new Error('API no responde');
+                if (response.ok) {
+                    const data = await response.json();
+                    if (data.success) {
+                        document.getElementById('configStatus').innerHTML = '<div style="color:green;padding:15px;background:#d4edda;border-radius:8px;margin-top:15px;">✅ API funcionando correctamente</div>';
+                        return;
+                    }
                 }
+                throw new Error('API no responde correctamente');
             } catch (error) {
-                document.getElementById('configStatus').innerHTML = '<div style="color:red;padding:15px;background:#f8d7da;border-radius:8px;margin-top:15px;">❌ Error conectando con API</div>';
+                document.getElementById('configStatus').innerHTML = '<div style="color:red;padding:15px;background:#f8d7da;border-radius:8px;margin-top:15px;">❌ Error: ' + error.message + '</div>';
             }
         }
         
@@ -355,12 +357,23 @@
             try {
                 const response = await fetch(API_URL, {
                     method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
+                    headers: { 
+                        'Content-Type': 'application/json',
+                        'Accept': 'application/json'
+                    },
                     body: JSON.stringify({ action, ...data })
                 });
-                return await response.json();
+                
+                if (!response.ok) {
+                    throw new Error(`Error HTTP: ${response.status}`);
+                }
+                
+                const responseData = await response.json();
+                return responseData;
+                
             } catch (error) {
                 console.error('Error API:', error);
+                alert('Error conectando con la API: ' + error.message);
                 return null;
             }
         }
@@ -634,10 +647,9 @@
                 const totalPoints = clients.reduce((sum, c) => sum + c.points, 0);
                 const activeClients = clients.filter(c => c.purchases > 0).length;
                 
-                // Actualizar UI
+                // Actualizar UI - ERROR CORREGIDO AQUÍ
                 document.getElementById('totalClients').textContent = totalClients;
-                document.getElementById('totalSales').textContent = '
-             + totalSales.toLocaleString();
+                document.getElementById('totalSales').textContent = '$' + totalSales.toLocaleString();
                 document.getElementById('totalPoints').textContent = totalPoints.toLocaleString();
                 document.getElementById('activeClients').textContent = activeClients;
                 
@@ -650,7 +662,7 @@
                     <tr>
                         <td>${c.name}</td>
                         <td>${c.points}</td>
-                        <td>${c.totalSpent.toLocaleString()}</td>
+                        <td>$${c.totalSpent.toLocaleString()}</td>
                         <td>${c.purchases}</td>
                     </tr>
                 `).join('');
@@ -668,8 +680,7 @@
         
         function viewSheet() {
             if (API_URL) {
-                // Extraer SHEET_ID de la URL del script si es posible
-                window.open('https://sheets.google.com', '_blank');
+                window.open('https://docs.google.com/spreadsheets', '_blank');
             }
         }
     </script>
