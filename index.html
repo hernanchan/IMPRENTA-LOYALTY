@@ -354,8 +354,7 @@
             }
             
             try {
-                const proxyUrl = 'https://cors-anywhere.herokuapp.com/';
-                const response = await fetch(proxyUrl + API_URL, {
+                const response = await fetch(API_URL, {
                     method: 'POST',
                     headers: { 
                         'Content-Type': 'application/json',
@@ -373,7 +372,7 @@
                 
             } catch (error) {
                 console.error('Error API:', error);
-                alert('Error conectando con la API: ' + error.message);
+                alert('Error conectando con la API. Abre la consola (F12) para más detalles.');
                 return null;
             }
         }
